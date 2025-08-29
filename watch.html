@@ -1,0 +1,1171 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>مشاهدة الأنمي - أنمي 4U</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: {
+                            50: '#eff6ff',
+                            100: '#dbeafe',
+                            500: '#3b82f6',
+                            600: '#2563eb',
+                            700: '#1d4ed8',
+                        },
+                        secondary: {
+                            500: '#8b5cf6',
+                            600: '#7c3aed',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        /* Custom Scrollbar */
+        .episodes-sidebar::-webkit-scrollbar {
+            width: 8px;
+        }
+        
+        .episodes-sidebar::-webkit-scrollbar-track {
+            background: linear-gradient(180deg, #f8fafc, #e2e8f0);
+            border-radius: 4px;
+        }
+        
+        .episodes-sidebar::-webkit-scrollbar-thumb {
+            background: linear-gradient(180deg, #cbd5e0, #94a3b8);
+            border-radius: 4px;
+            border: 1px solid #e2e8f0;
+        }
+        
+        .episodes-sidebar::-webkit-scrollbar-thumb:hover {
+            background: linear-gradient(180deg, #94a3b8, #64748b);
+        }
+        
+        /* Server Buttons */
+        .server-btn {
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            overflow: hidden;
+            border: 2px solid transparent;
+        }
+        
+        .server-btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+            transition: left 0.6s ease;
+        }
+        
+        .server-btn:hover::before {
+            left: 100%;
+        }
+        
+        .server-btn:hover {
+            transform: translateY(-4px) scale(1.02);
+            box-shadow: 0 12px 30px rgba(59, 130, 246, 0.4);
+            border-color: rgba(59, 130, 246, 0.3);
+        }
+        
+        .server-btn.active {
+            background: linear-gradient(135deg, #3b82f6, #8b5cf6);
+            color: white;
+            transform: scale(1.05);
+            box-shadow: 0 12px 35px rgba(59, 130, 246, 0.5);
+            border-color: rgba(255, 255, 255, 0.3);
+        }
+        
+        .server-btn.active::after {
+            content: '✓';
+            position: absolute;
+            top: 8px;
+            right: 8px;
+            background: #10b981;
+            color: white;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            font-weight: bold;
+            animation: bounce 0.6s ease-in-out;
+        }
+        
+        @keyframes bounce {
+            0%, 20%, 50%, 80%, 100% { transform: translateY(0); }
+            40% { transform: translateY(-8px); }
+            60% { transform: translateY(-4px); }
+        }
+        
+        /* Episode Item */
+        .episode-item {
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            overflow: hidden;
+            border: 2px solid transparent;
+            cursor: pointer;
+        }
+        
+        .episode-item::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            right: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(59, 130, 246, 0.15), transparent);
+            transition: right 0.6s ease;
+        }
+        
+        .episode-item:hover::before {
+            right: 100%;
+        }
+        
+        .episode-item:hover {
+            background: linear-gradient(135deg, #f8fafc, #f1f5f9);
+            transform: translateX(-8px) scale(1.02);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+            border-color: rgba(59, 130, 246, 0.2);
+        }
+        
+        .episode-item.active {
+            background: linear-gradient(135deg, #3b82f6, #8b5cf6);
+            color: white;
+            border-right: 4px solid #1e40af;
+            transform: translateX(-6px) scale(1.03);
+            box-shadow: 0 8px 30px rgba(59, 130, 246, 0.4);
+        }
+        
+        .episode-item.active::after {
+            content: '▶';
+            position: absolute;
+            top: 50%;
+            right: 12px;
+            transform: translateY(-50%);
+            color: white;
+            font-size: 16px;
+            animation: pulse 2s infinite;
+        }
+        
+        @keyframes pulse {
+            0%, 100% { opacity: 1; transform: translateY(-50%) scale(1); }
+            50% { opacity: 0.7; transform: translateY(-50%) scale(1.1); }
+        }
+        
+        /* Video Player */
+        .video-container {
+            aspect-ratio: 16/9;
+            background: #000;
+            border-radius: 20px;
+            overflow: hidden;
+            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.4);
+            border: 3px solid rgba(255, 255, 255, 0.1);
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        
+        .video-container:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 35px 70px rgba(0, 0, 0, 0.5);
+            border-color: rgba(59, 130, 246, 0.3);
+        }
+        
+        .video-player-content {
+            background: linear-gradient(135deg, #1e3a8a, #3730a3, #7c3aed);
+            background-size: 400% 400%;
+            animation: gradientShift 10s ease infinite;
+        }
+        
+        @keyframes gradientShift {
+            0%, 100% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+        }
+        
+        /* Enhanced Cards */
+        .enhanced-card {
+            background: linear-gradient(135deg, #ffffff 0%, #f8fafc 100%);
+            border: 1px solid #e2e8f0;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            overflow: hidden;
+            position: relative;
+        }
+        
+        .enhanced-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: linear-gradient(90deg, #3b82f6, #8b5cf6, #10b981);
+            transform: scaleX(0);
+            transition: transform 0.4s ease;
+        }
+        
+        .enhanced-card:hover::before {
+            transform: scaleX(1);
+        }
+        
+        .enhanced-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.15);
+            border-color: rgba(59, 130, 246, 0.2);
+        }
+        
+        /* Enhanced Buttons */
+        .btn-enhanced {
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .btn-enhanced::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+            transition: left 0.5s ease;
+        }
+        
+        .btn-enhanced:hover::before {
+            left: 100%;
+        }
+        
+        .btn-enhanced:hover {
+            transform: translateY(-2px) scale(1.02);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+        }
+        
+        /* Enhanced Icons */
+        .icon-enhanced {
+            transition: all 0.3s ease;
+            filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.1));
+        }
+        
+        .icon-enhanced:hover {
+            transform: scale(1.1) rotate(5deg);
+            filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.2));
+        }
+        
+        /* Status Indicators */
+        .status-indicator {
+            transition: all 0.3s ease;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+        
+        .status-indicator:hover {
+            transform: scale(1.1);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        }
+        
+        /* Episode Info Grid */
+        .episode-info-grid {
+            display: grid;
+            gap: 1rem;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        }
+        
+        .episode-info-item {
+            background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+            border: 1px solid #e2e8f0;
+            border-radius: 0.75rem;
+            padding: 1rem;
+            transition: all 0.3s ease;
+        }
+        
+        .episode-info-item:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+            border-color: rgba(59, 130, 246, 0.2);
+        }
+        
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .mobile-episodes {
+                position: fixed;
+                top: 0;
+                right: -100%;
+                width: 320px;
+                height: 100vh;
+                z-index: 50;
+                transition: right 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+                backdrop-filter: blur(15px);
+                background: rgba(255, 255, 255, 0.95);
+                border-left: 2px solid rgba(59, 130, 246, 0.2);
+            }
+            
+            .mobile-episodes.open {
+                right: 0;
+            }
+            
+            .sidebar-overlay {
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                background: rgba(0, 0, 0, 0.7);
+                z-index: 40;
+                opacity: 0;
+                visibility: hidden;
+                transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+                backdrop-filter: blur(8px);
+            }
+            
+            .sidebar-overlay.open {
+                opacity: 1;
+                visibility: visible;
+            }
+            
+            .video-container {
+                border-radius: 16px;
+                margin: 0 -1rem;
+            }
+            
+            .server-btn {
+                padding: 1rem 0.75rem;
+                font-size: 0.875rem;
+            }
+            
+            .episode-item {
+                padding: 1rem 0.75rem;
+            }
+            
+            .episode-info-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .video-container {
+                border-radius: 12px;
+                margin: 0 -0.5rem;
+            }
+            
+            .server-btn {
+                padding: 0.75rem 0.5rem;
+                font-size: 0.75rem;
+            }
+            
+            .episode-item {
+                padding: 0.75rem 0.5rem;
+            }
+            
+            .mobile-episodes {
+                width: 280px;
+            }
+        }
+        
+        /* Loading Animation */
+        .loading-spinner {
+            animation: spin 1s linear infinite;
+        }
+        
+        @keyframes spin {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+        
+        /* Fade In Animation */
+        .fade-in {
+            animation: fadeIn 0.6s ease-in;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        /* Slide Up Animation */
+        .slide-up {
+            animation: slideUp 0.6s ease-out;
+        }
+        
+        @keyframes slideUp {
+            from { opacity: 0; transform: translateY(30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        /* Scale In Animation */
+        .scale-in {
+            animation: scaleIn 0.4s ease-out;
+        }
+        
+        @keyframes scaleIn {
+            from { opacity: 0; transform: scale(0.9); }
+            to { opacity: 1; transform: scale(1); }
+        }
+        
+        /* Text Shadow Utilities */
+        .text-shadow-lg {
+            text-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+        }
+        
+        .text-shadow-xl {
+            text-shadow: 0 6px 12px rgba(0, 0, 0, 0.4);
+        }
+        
+        /* Backdrop Blur Utilities */
+        .backdrop-blur-sm { backdrop-filter: blur(4px); }
+        .backdrop-blur-md { backdrop-filter: blur(8px); }
+        .backdrop-blur-lg { backdrop-filter: blur(12px); }
+        .backdrop-blur-xl { backdrop-filter: blur(16px); }
+        
+        /* Icon Size Utilities */
+        .icon-sm { font-size: 0.875rem; }
+        .icon-base { font-size: 1rem; }
+        .icon-lg { font-size: 1.125rem; }
+        .icon-xl { font-size: 1.25rem; }
+        .icon-2xl { font-size: 1.5rem; }
+        .icon-3xl { font-size: 1.875rem; }
+        .icon-4xl { font-size: 2.25rem; }
+        .icon-5xl { font-size: 3rem; }
+        .icon-6xl { font-size: 3.75rem; }
+        
+        /* Button Variants */
+        .btn-primary {
+            @apply bg-gradient-to-r from-primary-500 to-primary-600 hover:from-primary-600 hover:to-primary-700 text-white font-semibold py-2 px-4 rounded-lg transition-all duration-300 transform hover:scale-105 hover:shadow-lg;
+        }
+        
+        .btn-secondary {
+            @apply bg-gradient-to-r from-gray-500 to-gray-600 hover:from-gray-600 hover:to-gray-700 text-white font-semibold py-2 px-4 rounded-lg transition-all duration-300 transform hover:scale-105 hover:shadow-lg;
+        }
+        
+        .btn-accent {
+            @apply bg-gradient-to-r from-secondary-500 to-secondary-600 hover:from-secondary-600 hover:to-secondary-700 text-white font-semibold py-2 px-4 rounded-lg transition-all duration-300 transform hover:scale-105 hover:shadow-lg;
+        }
+        
+        .btn-outline {
+            @apply border-2 border-primary-500 text-primary-500 hover:bg-primary-500 hover:text-white font-semibold py-2 px-4 rounded-lg transition-all duration-300 transform hover:scale-105;
+        }
+        
+        /* Card Variants */
+        .card-primary {
+            @apply bg-white rounded-2xl shadow-lg border border-gray-200 p-6 enhanced-card;
+            border-left: 4px solid #3b82f6;
+        }
+        
+        .card-secondary {
+            @apply bg-white rounded-2xl shadow-lg border border-gray-200 p-6 enhanced-card;
+            border-left: 4px solid #8b5cf6;
+        }
+        
+        .card-accent {
+            @apply bg-white rounded-2xl shadow-lg border border-gray-200 p-6 enhanced-card;
+            border-left: 4px solid #10b981;
+        }
+    </style>
+</head>
+<body class="bg-gradient-to-br from-gray-50 to-gray-100 min-h-screen">
+    <!-- Header -->
+    <header class="bg-white shadow-md sticky top-0 z-40 backdrop-blur-sm bg-white/80">
+        <div class="container mx-auto px-4 py-4">
+            <div class="flex items-center justify-between">
+                <a href="javascript:void(0)" onclick="handleBack()" aria-label="رجوع" title="رجوع" class="group relative overflow-hidden px-3 py-2 sm:px-4 sm:py-2.5 md:px-6 md:py-3 bg-gradient-to-r from-primary-500 via-primary-600 to-secondary-500 hover:from-primary-600 hover:via-primary-700 hover:to-secondary-600 text-white rounded-xl font-semibold transition-all duration-500 flex items-center gap-2 sm:gap-3 shadow-xl hover:shadow-2xl transform hover:-translate-y-1 hover:scale-105 text-xs sm:text-sm md:text-base btn-enhanced">
+                    <div class="absolute inset-0 bg-gradient-to-r from-white/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                    <i class="fas fa-arrow-right text-lg group-hover:rotate-12 transition-transform duration-300 relative z-10 icon-enhanced"></i>
+                </a>
+                
+                                 <div class="flex items-center gap-4 min-w-0">
+                     <!-- شعار التطبيق -->
+                     <div class="flex items-center gap-3">
+                         <img src="anime4u.png" alt="شعار أنمي 4U" class="w-10 h-10 rounded-xl shadow-lg hover:scale-110 transition-transform duration-300">
+                         <h1 id="animeTitle" class="text-xl font-bold text-gray-800 truncate whitespace-nowrap overflow-hidden max-w-[50vw] sm:max-w-[55vw] md:max-w-[35vw] lg:max-w-[25vw]" title="مشاهدة الأنمي">مشاهدة الأنمي</h1>
+                     </div>
+                     <button id="toggleSidebar" class="md:hidden p-2 bg-primary-500 text-white rounded-lg hover:bg-primary-600 transition-all duration-300 transform hover:scale-105 btn-enhanced">
+                         <i class="fas fa-list icon-enhanced"></i>
+                     </button>
+                 </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="container mx-auto px-4 py-6">
+        <div class="grid grid-cols-1 lg:grid-cols-4 gap-6">
+            <!-- Video Player Section -->
+            <div class="lg:col-span-3 space-y-6">
+                <!-- Video Player -->
+                <div class="video-container bg-black rounded-2xl shadow-2xl overflow-hidden">
+                    <div id="videoPlayer" class="w-full h-full flex items-center justify-center">
+                        <div class="text-center text-white">
+                            <i class="fas fa-play-circle text-6xl mb-4 text-gray-400"></i>
+                            <p class="text-lg">اختر حلقة وسيرفر للمشاهدة</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Server Selection -->
+                <div class="card-primary">
+                    <h2 class="text-xl font-bold text-gray-800 mb-4 flex items-center gap-2">
+                        <i class="fas fa-server text-primary-500 icon-enhanced"></i>
+                        <span>اختر السيرفر</span>
+                    </h2>
+                    
+                    <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3" id="serversContainer">
+                        <!-- Servers will be populated here -->
+                    </div>
+                </div>
+                
+                <!-- Episode Info -->
+                <div class="card-accent">
+                    <h2 class="text-xl font-bold text-gray-800 mb-4 flex items-center gap-2">
+                        <i class="fas fa-info-circle text-primary-500 icon-enhanced"></i>
+                        <span>معلومات الحلقة</span>
+                    </h2>
+                    
+                    <div id="episodeInfo" class="text-gray-600">
+                        <p>اختر حلقة لعرض المعلومات</p>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Episodes Sidebar -->
+            <div class="lg:col-span-1">
+                <div class="card-secondary overflow-hidden">
+                    <div class="p-4 border-b border-gray-200 hidden md:block">
+                        <h3 class="text-lg font-bold text-gray-800 flex items-center gap-2">
+                            <i class="fas fa-list-ol text-primary-500 icon-enhanced"></i>
+                            <span>الحلقات</span>
+                        </h3>
+                    </div>
+                    
+                    <div class="episodes-sidebar h-96 overflow-y-auto p-2 hidden md:block" id="episodesSidebar">
+                        <!-- Episodes will be populated here -->
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+    
+    <!-- Mobile Sidebar Overlay -->
+    <div id="sidebarOverlay" class="sidebar-overlay"></div>
+    
+    <!-- Mobile Episodes Sidebar -->
+    <div id="episodesSidebarMobile" class="mobile-episodes p-4 md:hidden">
+        <div class="flex items-center justify-between mb-3">
+            <h3 class="text-lg font-bold text-gray-800 flex items-center gap-2">
+                <i class="fas fa-list-ol text-primary-500 icon-enhanced"></i>
+                <span>الحلقات</span>
+            </h3>
+            <button onclick="closeSidebar()" class="p-2 rounded-md bg-gray-100 hover:bg-gray-200 transition-all duration-300 transform hover:scale-105 btn-enhanced">
+                <i class="fas fa-times icon-enhanced"></i>
+            </button>
+        </div>
+        <div class="overflow-y-auto" style="height: calc(100vh - 7rem);" id="episodesSidebarMobileList"></div>
+    </div>
+    
+    <!-- Loading Modal -->
+    <div id="loadingModal" class="fixed inset-0 bg-black bg-opacity-50 z-50 hidden flex items-center justify-center backdrop-blur-sm">
+        <div class="bg-white rounded-2xl p-8 text-center enhanced-card">
+            <div class="loading-spinner w-16 h-16 border-4 border-primary-500 border-t-transparent rounded-full mx-auto mb-4"></div>
+            <p class="text-lg text-gray-700 font-semibold">جاري تحميل الفيديو...</p>
+            <p class="text-sm text-gray-500 mt-2">يرجى الانتظار</p>
+        </div>
+    </div>
+
+    <script>
+        // Global variables
+        let currentAnime = null;
+        let currentEpisode = null;
+        let currentServer = null;
+        let allEpisodes = [];
+        
+        // Initialize page
+        document.addEventListener('DOMContentLoaded', function() {
+            loadAnimeData();
+            setupEventListeners();
+        });
+        
+        function setupEventListeners() {
+            // Toggle sidebar on mobile
+            const toggleBtn = document.getElementById('toggleSidebar');
+            if (toggleBtn) toggleBtn.addEventListener('click', toggleSidebar);
+            
+            // Close sidebar when clicking overlay
+            const overlayEl = document.getElementById('sidebarOverlay');
+            if (overlayEl) overlayEl.addEventListener('click', closeSidebar);
+            
+            // Close sidebar with Escape key
+            document.addEventListener('keydown', function(event) {
+                if (event.key === 'Escape') {
+                    closeSidebar();
+                }
+            });
+        }
+
+        function handleBack() {
+            const ref = document.referrer;
+            if (ref) {
+                window.location.href = ref;
+                return;
+            }
+            // Fallback if no referrer
+            window.location.href = 'index.html';
+        }
+        
+        function toggleSidebar() {
+            const sidebar = document.getElementById('episodesSidebarMobile');
+            const overlay = document.getElementById('sidebarOverlay');
+            if (!sidebar || !overlay) return;
+            sidebar.classList.toggle('open');
+            overlay.classList.toggle('open');
+        }
+        
+        function closeSidebar() {
+            const sidebar = document.getElementById('episodesSidebarMobile');
+            const overlay = document.getElementById('sidebarOverlay');
+            if (!sidebar || !overlay) return;
+            sidebar.classList.remove('open');
+            overlay.classList.remove('open');
+        }
+        
+        function loadAnimeData() {
+            // Get anime name from URL parameters
+            const urlParams = new URLSearchParams(window.location.search);
+            const animeName = urlParams.get('anime');
+            const episodeNumber = urlParams.get('ep');
+            
+            if (!animeName) {
+                showError('اسم الأنمي غير محدد');
+                return;
+            }
+            
+            // Load anime data
+            loadAnimeFromJSON(animeName, episodeNumber);
+        }
+        
+        async function loadAnimeFromJSON(animeName, episodeNumber) {
+            try {
+                // Try to load from anime_data.json
+                const response = await fetch('anime_data.json');
+                const data = await response.json();
+                
+                const anime = Object.values(data).find(a => a.name === animeName);
+                if (anime) {
+                    currentAnime = anime;
+                    const baseEpisodes = anime.episodes || [];
+                    const customStore = JSON.parse(localStorage.getItem('anime4u_custom_episodes')||'{}');
+                    const customEpisodes = Array.isArray(customStore[anime.name]) ? customStore[anime.name] : [];
+                    const mergedMap = {};
+                    [...baseEpisodes, ...customEpisodes].forEach(ep=>{ mergedMap[ep.episode_number]=ep; });
+                    allEpisodes = Object.values(mergedMap).sort((a,b)=> parseInt((a.episode_number||'').replace(/[^0-9]/g,'')) - parseInt((b.episode_number||'').replace(/[^0-9]/g,'')) );
+                    
+                    // Update page title
+                    const titleEl = document.getElementById('animeTitle');
+                    titleEl.textContent = anime.name;
+                    titleEl.setAttribute('title', anime.name);
+                    
+                    // Load episodes
+                    loadEpisodes(episodeNumber);
+                    
+                    // Load servers
+                    loadServers();
+                    
+                    // Load specific episode if specified
+                    if (episodeNumber) {
+                        const normalize = v => String(v).replace('الحلقة ','');
+                        const episode = allEpisodes.find(ep => normalize(ep.episode_number) == normalize(episodeNumber));
+                        if (episode) {
+                            // Use setTimeout to ensure DOM is ready
+                            setTimeout(() => {
+                                selectEpisode(episode.episode_number);
+                            }, 100);
+                        }
+                    }
+                } else {
+                    showError('الأنمي غير موجود');
+                }
+            } catch (error) {
+                console.error('Error loading anime data:', error);
+                showError('تعذر تحميل بيانات الأنمي');
+            }
+        }
+        
+        function loadEpisodes(selectedEpisode = null) {
+            const sidebar = document.getElementById('episodesSidebar');
+            const mobileList = document.getElementById('episodesSidebarMobileList');
+            
+            if (allEpisodes.length === 0) {
+                const noEpisodesMsg = '<div class="text-center py-8 text-gray-500"><i class="fas fa-exclamation-circle icon-lg mb-2"></i><p>لا توجد حلقات متاحة</p></div>';
+                sidebar.innerHTML = noEpisodesMsg;
+                if (mobileList) mobileList.innerHTML = noEpisodesMsg;
+                return;
+            }
+            
+            const episodesHTML = allEpisodes.map(ep => {
+                // Extract episode number from "الحلقة 1" format
+                const episodeNum = ep.episode_number.replace('الحلقة ', '');
+                const isActive = selectedEpisode && episodeNum == selectedEpisode;
+                
+                return `
+                    <div class="episode-item p-4 rounded-xl cursor-pointer border-r-4 border-transparent ${isActive ? 'active' : ''} hover:bg-gradient-to-l hover:from-primary-50 hover:to-transparent" 
+                         onclick="selectEpisode('${ep.episode_number}')" data-episode="${ep.episode_number}">
+                        <div class="flex items-center justify-between">
+                            <div class="flex-1">
+                                <div class="font-bold text-lg mb-1">${ep.episode_number}</div>
+                                <div class="text-sm text-gray-500 ${isActive ? 'text-white/80' : ''}">${ep.title || 'بدون عنوان'}</div>
+                            </div>
+                            <div class="flex items-center gap-2">
+                                <div class="w-2 h-2 bg-primary-500 rounded-full status-indicator ${isActive ? 'bg-white' : ''}"></div>
+                                <i class="fas fa-play text-primary-500 ${isActive ? 'text-white' : ''} text-lg icon-enhanced"></i>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+            
+            sidebar.innerHTML = episodesHTML;
+            if (mobileList) mobileList.innerHTML = episodesHTML;
+            
+            // Add animation to episodes
+            setTimeout(() => {
+                const episodeItems = sidebar.querySelectorAll('.episode-item');
+                episodeItems.forEach((item, index) => {
+                    item.style.animationDelay = `${index * 0.1}s`;
+                    item.classList.add('slide-up');
+                });
+            }, 100);
+        }
+        
+        function loadServers() {
+            const serversContainer = document.getElementById('serversContainer');
+            
+            // Clear servers container initially
+            serversContainer.innerHTML = `
+                <div class="text-center py-8 text-gray-500">
+                    <i class="fas fa-hand-point-up icon-4xl mb-3 text-primary-500"></i>
+                    <p class="text-lg">اختر حلقة أولاً لعرض السيرفرات</p>
+                    <p class="text-sm text-gray-400 mt-2">اضغط على أي حلقة من القائمة اليمنى</p>
+                </div>
+            `;
+        }
+        
+        function updateServers(episode) {
+            const serversContainer = document.getElementById('serversContainer');
+            
+            if (!episode || !episode.watch_servers || episode.watch_servers.length === 0) {
+                serversContainer.innerHTML = `
+                    <div class="text-center py-8 text-gray-500">
+                        <i class="fas fa-exclamation-triangle icon-3xl mb-3 text-yellow-500"></i>
+                        <p class="text-lg">لا توجد سيرفرات متاحة لهذه الحلقة</p>
+                        <p class="text-sm text-gray-400 mt-2">يرجى المحاولة لاحقاً</p>
+                    </div>
+                `;
+                return;
+            }
+            
+            const serversHTML = episode.watch_servers.map((server, index) => `
+                <button class="server-btn p-4 bg-gradient-to-br from-gray-50 to-gray-100 hover:from-primary-50 hover:to-primary-100 border-2 border-gray-200 hover:border-primary-300 rounded-xl text-center transition-all duration-300 relative overflow-hidden" 
+                        onclick="selectServer('${index}', '${server.url}', '${server.name}')">
+                    <div class="absolute top-2 right-2 w-3 h-3 bg-green-500 rounded-full animate-pulse status-indicator"></div>
+                    <div class="text-lg font-semibold text-gray-800 mb-2">${server.name}</div>
+                    <div class="text-sm text-gray-600 mb-2 flex items-center justify-center gap-1">
+                        <i class="fas fa-video text-primary-500 icon-enhanced"></i>
+                        <span>جودة عالية</span>
+                    </div>
+                    <div class="flex items-center justify-center gap-2">
+                        <div class="w-2 h-2 bg-green-500 rounded-full status-indicator"></div>
+                        <span class="text-xs text-green-600 font-medium">متصل</span>
+                    </div>
+                </button>
+            `).join('');
+            
+            serversContainer.innerHTML = serversHTML;
+            
+            // Add animation to servers
+            setTimeout(() => {
+                const serverButtons = serversContainer.querySelectorAll('.server-btn');
+                serverButtons.forEach((btn, index) => {
+                    btn.style.animationDelay = `${index * 0.1}s`;
+                    btn.classList.add('scale-in');
+                });
+            }, 100);
+        }
+        
+        function selectEpisode(episodeNumber) {
+            // Find the episode object by episode number
+            const episode = allEpisodes.find(ep => ep.episode_number === episodeNumber);
+            
+            if (!episode) {
+                console.error('Episode not found:', episodeNumber);
+                return;
+            }
+            
+            currentEpisode = episode;
+            
+            // Update active episode in sidebar
+            document.querySelectorAll('.episode-item').forEach(item => {
+                item.classList.remove('active');
+            });
+            
+            // Find and activate the clicked episode
+            // Highlight in both desktop and mobile lists
+            const desktopItems = document.querySelectorAll('#episodesSidebar .episode-item');
+            const mobileItems = document.querySelectorAll('#episodesSidebarMobileList .episode-item');
+            
+            // Find by data attribute
+            const desktopItem = Array.from(desktopItems).find(item => item.dataset.episode === episodeNumber);
+            const mobileItem = Array.from(mobileItems).find(item => item.dataset.episode === episodeNumber);
+            
+            if (desktopItem) {
+                desktopItem.classList.add('active');
+                desktopItem.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+            }
+            if (mobileItem) {
+                mobileItem.classList.add('active');
+            }
+            
+            // Update episode info with animation
+            updateEpisodeInfo(episode);
+            
+            // Update servers for this episode
+            updateServers(episode);
+            
+            // Update URL with episode number (without "الحلقة" prefix)
+            const episodeNum = episode.episode_number.replace('الحلقة ', '');
+            const url = new URL(window.location);
+            url.searchParams.set('ep', episodeNum);
+            window.history.pushState({}, '', url);
+            
+            // Show "Choose Server" message in video player
+            showChooseServerMessage(episode);
+            
+            // Reset current server since episode changed
+            currentServer = null;
+            
+            // Remove active state from server buttons
+            document.querySelectorAll('.server-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            
+            // Close mobile sidebar
+            closeSidebar();
+            
+            // Log for debugging
+            console.log('Selected episode:', episodeNumber, episode);
+        }
+        
+        function selectServer(serverIndex, serverUrl, serverName) {
+            currentServer = { index: serverIndex, url: serverUrl, name: serverName };
+            
+            // Update active server
+            document.querySelectorAll('.server-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            
+            event.target.closest('.server-btn').classList.add('active');
+            
+            // Automatically load video when server is selected
+            if (currentEpisode) {
+                embedVideo(serverUrl);
+            }
+        }
+        
+        function updateEpisodeInfo(episode) {
+            const episodeInfo = document.getElementById('episodeInfo');
+            
+            episodeInfo.innerHTML = `
+                <div class="episode-info-grid">
+                    <div class="episode-info-item">
+                        <div class="flex items-center gap-2 mb-2">
+                            <i class="fas fa-hashtag text-primary-500 icon-enhanced"></i>
+                            <span class="text-sm text-gray-500">رقم الحلقة</span>
+                        </div>
+                        <div class="font-bold text-lg text-gray-800">${episode.episode_number}</div>
+                    </div>
+                    
+                    <div class="episode-info-item">
+                        <div class="flex items-center gap-2 mb-2">
+                            <i class="fas fa-heading text-secondary-500 icon-enhanced"></i>
+                            <span class="text-sm text-gray-500">العنوان</span>
+                        </div>
+                        <div class="font-semibold text-gray-800">${episode.title || 'بدون عنوان'}</div>
+                    </div>
+                    
+                    <div class="episode-info-item">
+                        <div class="flex items-center gap-2 mb-2">
+                            <i class="fas fa-clock text-accent-500 icon-enhanced"></i>
+                            <span class="text-sm text-gray-500">المدة</span>
+                        </div>
+                        <div class="font-semibold text-gray-800">24 دقيقة</div>
+                    </div>
+                    
+                    <div class="episode-info-item">
+                        <div class="flex items-center gap-2 mb-2">
+                            <i class="fas fa-check-circle text-green-500 icon-enhanced"></i>
+                            <span class="text-sm text-gray-500">الحالة</span>
+                        </div>
+                        <div class="font-semibold text-green-600">متاحة</div>
+                    </div>
+                </div>
+            `;
+            
+            // Add animation
+            episodeInfo.classList.add('fade-in');
+            setTimeout(() => episodeInfo.classList.remove('fade-in'), 600);
+        }
+        
+        function loadVideo() {
+            if (!currentEpisode || !currentServer) {
+                showError('يرجى اختيار حلقة وسيرفر');
+                return;
+            }
+            
+            // Show loading modal
+            document.getElementById('loadingModal').classList.remove('hidden');
+            
+            // Simulate video loading
+            setTimeout(() => {
+                document.getElementById('loadingModal').classList.add('hidden');
+                
+                // Update video player with episode info
+                const videoPlayer = document.getElementById('videoPlayer');
+                videoPlayer.innerHTML = `
+                    <div class="w-full h-full flex items-center justify-center video-player-content">
+                        <div class="text-center text-white relative z-10">
+                            <div class="mb-8">
+                                <div class="w-32 h-32 mx-auto mb-6 bg-white/20 rounded-full flex items-center justify-center backdrop-blur-sm">
+                                    <i class="fas fa-play text-6xl text-white opacity-90 icon-enhanced"></i>
+                                </div>
+                            </div>
+                            <h3 class="text-3xl font-bold mb-3 text-shadow-lg">${currentEpisode.episode_number}</h3>
+                            <p class="text-xl opacity-90 mb-2">${currentEpisode.title || 'بدون عنوان'}</p>
+                            <div class="inline-flex items-center gap-2 bg-white/20 px-4 py-2 rounded-full backdrop-blur-sm">
+                                <i class="fas fa-server text-sm icon-enhanced"></i>
+                                <span class="text-sm font-medium">${currentServer.name}</span>
+                            </div>
+                            <div class="mt-8">
+                                <button onclick="embedVideo('${currentServer.url}')" 
+                                        class="group px-8 py-4 bg-white text-primary-600 rounded-xl font-bold text-lg hover:bg-gray-100 transition-all duration-300 transform hover:scale-105 shadow-2xl hover:shadow-3xl btn-enhanced">
+                                    <i class="fas fa-play mr-3 group-hover:mr-4 transition-all duration-300 icon-enhanced"></i>
+                                    تشغيل الفيديو
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                `;
+                
+                // Add fade-in animation
+                videoPlayer.classList.add('fade-in');
+            }, 1000);
+        }
+        
+        function showError(message) {
+            const videoPlayer = document.getElementById('videoPlayer');
+            videoPlayer.innerHTML = `
+                <div class="w-full h-full flex items-center justify-center bg-gradient-to-br from-red-900 to-red-800">
+                    <div class="text-center text-white">
+                        <i class="fas fa-exclamation-triangle text-6xl mb-4 text-red-300 icon-enhanced"></i>
+                        <p class="text-xl font-semibold mb-2">${message}</p>
+                        <p class="text-red-200 text-sm">يرجى المحاولة مرة أخرى</p>
+                    </div>
+                </div>
+            `;
+            
+            // Add animation
+            videoPlayer.classList.add('fade-in');
+        }
+        
+        function embedVideo(serverUrl) {
+            const videoPlayer = document.getElementById('videoPlayer');
+            
+            // Show loading state
+            videoPlayer.innerHTML = `
+                <div class="w-full h-full flex items-center justify-center bg-black">
+                    <div class="text-center text-white">
+                        <div class="loading-spinner w-16 h-16 border-4 border-blue-500 border-t-transparent rounded-full mx-auto mb-4"></div>
+                        <p class="text-lg">جاري تحميل الفيديو...</p>
+                    </div>
+                </div>
+            `;
+            
+            // Try to embed the video based on server type
+            if (serverUrl.includes('megamax.me')) {
+                // Megamax iframe - direct embed
+                videoPlayer.innerHTML = `
+                    <div class="w-full h-full relative">
+                        <iframe src="${serverUrl}" 
+                                class="w-full h-full" 
+                                frameborder="0" 
+                                allowfullscreen
+                                allow="autoplay; fullscreen; picture-in-picture">
+                        </iframe>
+                    </div>
+                `;
+            } else if (serverUrl.includes('mega.nz')) {
+                // Mega.nz embed - direct embed
+                videoPlayer.innerHTML = `
+                    <div class="w-full h-full relative">
+                        <iframe src="${serverUrl}" 
+                                class="w-full h-full" 
+                                frameborder="0" 
+                                allowfullscreen
+                                allow="autoplay; fullscreen; picture-in-picture">
+                        </iframe>
+                    </div>
+                `;
+            } else if (serverUrl.includes('voe.sx')) {
+                // Voe.sx embed - direct embed
+                videoPlayer.innerHTML = `
+                    <div class="w-full h-full relative">
+                        <iframe src="${serverUrl}" 
+                                class="w-full h-full" 
+                                frameborder="0" 
+                                allowfullscreen
+                                allow="autoplay; fullscreen; picture-in-picture">
+                        </iframe>
+                    </div>
+                `;
+            } else if (serverUrl.includes('vidmoly.to')) {
+                // Vidmoly embed - direct embed
+                videoPlayer.innerHTML = `
+                    <div class="w-full h-full relative">
+                        <iframe src="${serverUrl}" 
+                                class="w-full h-full" 
+                                frameborder="0" 
+                                allowfullscreen
+                                allow="autoplay; fullscreen; picture-in-picture">
+                        </iframe>
+                    </div>
+                `;
+            } else if (serverUrl.includes('videa.hu')) {
+                // Videa embed - direct embed
+                videoPlayer.innerHTML = `
+                    <div class="w-full h-full relative">
+                        <iframe src="${serverUrl}" 
+                                class="w-full h-full" 
+                                frameborder="0" 
+                                allowfullscreen
+                                allow="autoplay; fullscreen; picture-in-picture">
+                        </iframe>
+                    </div>
+                `;
+            } else {
+                // Generic iframe for other servers
+                videoPlayer.innerHTML = `
+                    <div class="w-full h-full relative">
+                        <iframe src="${serverUrl}" 
+                                class="w-full h-full" 
+                                frameborder="0" 
+                                allowfullscreen
+                                allow="autoplay; fullscreen; picture-in-picture">
+                        </iframe>
+                    </div>
+                `;
+            }
+            
+            // Add fade-in animation
+            videoPlayer.classList.add('fade-in');
+        }
+        
+        function showChooseServerMessage(episode) {
+            const videoPlayer = document.getElementById('videoPlayer');
+            
+            videoPlayer.innerHTML = `
+                <div class="w-full h-full flex items-center justify-center video-player-content">
+                    <div class="text-center text-white px-4">
+                        <div class="mb-4 sm:mb-6 md:mb-8">
+                            <div class="w-20 h-20 sm:w-24 sm:h-24 md:w-32 md:h-32 mx-auto mb-3 sm:mb-4 md:mb-6 bg-white/20 rounded-full flex items-center justify-center backdrop-blur-sm">
+                                <i class="fas fa-server text-3xl sm:text-4xl md:text-6xl text-white opacity-90 icon-enhanced"></i>
+                            </div>
+                        </div>
+                        <h3 class="text-xl sm:text-2xl md:text-3xl font-bold mb-2 sm:mb-3 text-shadow-lg">${episode.episode_number}</h3>
+                        <p class="text-sm sm:text-lg md:text-xl opacity-90 mb-2">${episode.title || 'بدون عنوان'}</p>
+                        <div class="inline-flex items-center gap-2 bg-white/20 px-3 py-1.5 sm:px-4 sm:py-2 rounded-full backdrop-blur-sm mb-4 sm:mb-6">
+                            <i class="fas fa-info-circle text-xs sm:text-sm icon-enhanced"></i>
+                            <span class="text-xs sm:text-sm font-medium">تم اختيار الحلقة</span>
+                        </div>
+                        <div class="bg-white/10 rounded-xl sm:rounded-2xl p-3 sm:p-4 md:p-6 backdrop-blur-sm max-w-xs sm:max-w-sm md:max-w-md mx-auto">
+                            <p class="text-sm sm:text-base md:text-lg font-semibold mb-1 sm:mb-2">الآن اختر السيرفر</p>
+                            <p class="text-xs sm:text-sm opacity-80 leading-relaxed">اضغط على أي سيرفر من القائمة أدناه</p>
+                        </div>
+                    </div>
+                </div>
+            `;
+            
+            // Add animation
+            videoPlayer.classList.add('fade-in');
+        }
+        
+        function showServerSelectedMessage(serverName) {
+            const videoPlayer = document.getElementById('videoPlayer');
+            
+            videoPlayer.innerHTML = `
+                <div class="w-full h-full flex items-center justify-center video-player-content">
+                    <div class="text-center text-white">
+                        <div class="mb-8">
+                            <div class="w-32 h-32 mx-auto mb-6 bg-white/20 rounded-full flex items-center justify-center backdrop-blur-sm">
+                                <i class="fas fa-check-circle text-6xl text-green-400 opacity-90 icon-enhanced"></i>
+                            </div>
+                        </div>
+                        <h3 class="text-3xl font-bold mb-3 text-shadow-lg">${currentEpisode.episode_number}</h3>
+                        <p class="text-xl opacity-90 mb-2">${currentEpisode.title || 'بدون عنوان'}</p>
+                        <div class="inline-flex items-center gap-2 bg-white/20 px-4 py-2 rounded-full backdrop-blur-sm mb-6">
+                            <i class="fas fa-server text-sm icon-enhanced"></i>
+                            <span class="text-sm font-medium">${serverName}</span>
+                        </div>
+                        <div class="bg-green-500/20 rounded-2xl p-6 backdrop-blur-sm border border-green-400/30">
+                            <p class="text-lg font-semibold mb-2 text-green-300">تم اختيار السيرفر!</p>
+                            <p class="text-sm opacity-80 mb-4">السيرفر جاهز للتشغيل</p>
+                            <button onclick="embedVideo('${currentServer.url}')" 
+                                    class="px-8 py-4 bg-green-500 hover:bg-green-600 text-white rounded-xl font-bold text-lg transition-all duration-300 transform hover:scale-105 shadow-2xl hover:shadow-3xl btn-enhanced">
+                                <i class="fas fa-play mr-3 icon-enhanced"></i>
+                                تشغيل الفيديو
+                            </button>
+                            <button onclick="resetVideoPlayer()" 
+                                    class="px-6 py-3 bg-gray-500 hover:bg-gray-600 text-white rounded-lg font-semibold transition-all duration-300 transform hover:scale-105 ml-3 btn-enhanced">
+                                <i class="fas fa-undo mr-2 icon-enhanced"></i>
+                                إعادة تعيين
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            `;
+            
+            // Add animation
+            videoPlayer.classList.add('fade-in');
+        }
+        
+        function resetVideoPlayer() {
+            const videoPlayer = document.getElementById('videoPlayer');
+            
+            // Reset to initial state
+            videoPlayer.innerHTML = `
+                <div class="w-full h-full flex items-center justify-center video-player-content">
+                    <div class="text-center text-white">
+                        <i class="fas fa-play-circle text-6xl mb-4 text-gray-300 icon-enhanced"></i>
+                        <p class="text-xl font-semibold mb-2">اختر حلقة وسيرفر للمشاهدة</p>
+                        <p class="text-gray-200 text-sm">اضغط على أي حلقة من القائمة اليمنى</p>
+                    </div>
+                </div>
+            `;
+            
+            // Reset current server
+            currentServer = null;
+            
+            // Remove active state from server buttons
+            document.querySelectorAll('.server-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            
+            // Add animation
+            videoPlayer.classList.add('fade-in');
+        }
+    </script>
+</body>
+</html>

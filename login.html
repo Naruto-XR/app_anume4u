@@ -1,0 +1,1010 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>تسجيل الدخول - Anime4U</title>
+    <link rel="icon" type="image/png" href="anime4u.png">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;600;700;900&display=swap" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: {
+                            50: '#f0f9ff',
+                            100: '#e0f2fe',
+                            200: '#bae6fd',
+                            300: '#7dd3fc',
+                            400: '#38bdf8',
+                            500: '#0ea5e9',
+                            600: '#0284c7',
+                            700: '#0369a1',
+                            800: '#075985',
+                            900: '#0c4a6e',
+                        },
+                        secondary: {
+                            50: '#fdf4ff',
+                            100: '#fae8ff',
+                            200: '#f5d0fe',
+                            300: '#f0abfc',
+                            400: '#e879f9',
+                            500: '#d946ef',
+                            600: '#c026d3',
+                            700: '#a21caf',
+                            800: '#86198f',
+                            900: '#701a75',
+                        }
+                    },
+                    fontFamily: {
+                        'arabic': ['Cairo', 'Arial', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Cairo', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: url('anime4u.png') center center/cover no-repeat fixed;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            position: relative;
+        }
+
+        body::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.4);
+            z-index: -1;
+        }
+
+        .auth-container {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.4);
+            width: 100%;
+            max-width: 450px;
+            animation: slideInUp 0.5s ease-out;
+            position: relative;
+            z-index: 2;
+        }
+
+        @keyframes slideInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .logo-container {
+            text-align: center;
+            margin-bottom: 30px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+
+        .logo {
+            width: 80px;
+            height: 80px;
+            border-radius: 20px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+            margin-bottom: 15px;
+        }
+
+        .title {
+            font-size: 2rem;
+            font-weight: 900;
+            color: #1f2937;
+            margin-bottom: 10px;
+            line-height: 1.2;
+        }
+
+        .subtitle {
+            color: #6b7280;
+            font-size: 1rem;
+            line-height: 1.4;
+            max-width: 100%;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #374151;
+            font-size: 0.95rem;
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 15px;
+            border: 2px solid #e5e7eb;
+            border-radius: 12px;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+            background: white;
+            font-family: 'Cairo', sans-serif;
+        }
+
+        .form-input:focus {
+            outline: none;
+            border-color: #0ea5e9;
+            box-shadow: 0 0 0 3px rgba(14, 165, 233, 0.1);
+        }
+
+        .form-input.error {
+            border-color: #ef4444;
+        }
+
+        .password-toggle {
+            position: relative;
+        }
+
+        .password-toggle i {
+            position: absolute;
+            left: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            cursor: pointer;
+            color: #6b7280;
+            transition: color 0.3s ease;
+        }
+
+        .password-toggle i:hover {
+            color: #0ea5e9;
+        }
+
+        .password-toggle .form-input {
+            padding-right: 15px;
+            padding-left: 45px;
+        }
+
+        .submit-btn {
+            width: 100%;
+            background: linear-gradient(135deg, #0ea5e9, #d946ef);
+            color: white;
+            padding: 15px;
+            border: none;
+            border-radius: 12px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-family: 'Cairo', sans-serif;
+            margin-top: 10px;
+        }
+
+        .submit-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(14, 165, 233, 0.3);
+        }
+
+        .submit-btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .error-message {
+            color: #ef4444;
+            font-size: 0.9rem;
+            margin-top: 5px;
+            display: none;
+        }
+
+        .success-message {
+            color: #10b981;
+            font-size: 0.9rem;
+            margin-top: 5px;
+            display: none;
+            text-align: center;
+            padding: 15px;
+            background: #f0fdf4;
+            border: 1px solid #bbf7d0;
+            border-radius: 10px;
+            font-weight: 600;
+        }
+
+        /* واجهة جاري تسجيل الدخول */
+        .loading-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.7);
+            backdrop-filter: blur(8px);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 9999;
+            animation: fadeIn 0.3s ease-out;
+        }
+
+        .loading-modal {
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            text-align: center;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+            max-width: 400px;
+            width: 90%;
+            animation: slideInUp 0.4s ease-out;
+        }
+
+        .loading-spinner {
+            width: 60px;
+            height: 60px;
+            border: 4px solid #e5e7eb;
+            border-top: 4px solid #0ea5e9;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 20px;
+        }
+
+        .loading-title {
+            font-size: 1.3rem;
+            font-weight: 700;
+            color: #1f2937;
+            margin-bottom: 10px;
+        }
+
+        .loading-subtitle {
+            color: #6b7280;
+            font-size: 1rem;
+            line-height: 1.5;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        @keyframes slideInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .links {
+            text-align: center;
+            margin-top: 20px;
+        }
+
+        .links a {
+            color: #0ea5e9;
+            text-decoration: none;
+            font-weight: 600;
+            transition: color 0.3s ease;
+        }
+
+        .links a:hover {
+            color: #d946ef;
+        }
+
+        .back-btn {
+            position: relative;
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.95), rgba(255, 255, 255, 0.85));
+            border: 2px solid rgba(14, 165, 233, 0.3);
+            padding: 10px 15px;
+            border-radius: 12px;
+            cursor: pointer;
+            font-family: 'Cairo', sans-serif;
+            font-weight: 700;
+            font-size: 0.9rem;
+            color: #0ea5e9;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(15px);
+            box-shadow: 0 6px 20px rgba(14, 165, 233, 0.15);
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            z-index: 1000;
+            margin-left: 15px;
+        }
+
+        .back-btn:hover {
+            background: linear-gradient(135deg, #0ea5e9, #d946ef);
+            color: white;
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(14, 165, 233, 0.4);
+            border-color: transparent;
+        }
+
+        .back-btn:active {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 15px rgba(14, 165, 233, 0.3);
+        }
+
+        .back-btn i {
+            font-size: 1rem;
+            transition: transform 0.3s ease;
+        }
+
+        .back-btn:hover i {
+            transform: translateX(-2px);
+        }
+
+        .forgot-password {
+            text-align: left;
+            margin-top: 10px;
+        }
+
+        .forgot-password a {
+            color: #6b7280;
+            text-decoration: none;
+            font-size: 0.9rem;
+            transition: color 0.3s ease;
+        }
+
+        .forgot-password a:hover {
+            color: #0ea5e9;
+        }
+
+        /* تحسينات التجاوب */
+        @media (max-width: 1024px) {
+            .auth-container {
+                max-width: 500px;
+                padding: 35px 30px;
+            }
+            
+            .logo-container {
+                gap: 12px;
+                flex-direction: row;
+                justify-content: center;
+            }
+            
+            .logo {
+                width: 75px;
+                height: 75px;
+                margin-bottom: 10px;
+            }
+            
+            .title {
+                font-size: 1.9rem;
+                line-height: 1.3;
+                margin-bottom: 8px;
+            }
+
+            .subtitle {
+                font-size: 1.05rem;
+                line-height: 1.5;
+                max-width: 90%;
+                margin: 0 auto;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .auth-container {
+                padding: 30px 25px;
+                margin: 15px;
+                max-width: 450px;
+            }
+
+            .logo-container {
+                flex-direction: column;
+                gap: 15px;
+                text-align: center;
+            }
+
+            .title {
+                font-size: 1.75rem;
+                line-height: 1.4;
+                margin-bottom: 8px;
+            }
+
+            .subtitle {
+                font-size: 1rem;
+                line-height: 1.5;
+                max-width: 100%;
+            }
+
+            .logo {
+                width: 70px;
+                height: 70px;
+                margin-bottom: 0;
+            }
+
+            .back-btn {
+                padding: 8px 12px;
+                font-size: 0.9rem;
+                margin-left: 0;
+            }
+
+            .form-input {
+                padding: 14px;
+            }
+
+            .submit-btn {
+                padding: 14px;
+            }
+        }
+
+        @media (max-width: 640px) {
+            .auth-container {
+                padding: 25px 20px;
+                max-width: 400px;
+            }
+
+            .title {
+                font-size: 1.6rem;
+            }
+
+            .subtitle {
+                font-size: 0.95rem;
+            }
+
+            .form-input {
+                padding: 13px;
+                font-size: 0.95rem;
+            }
+
+            .submit-btn {
+                padding: 13px;
+                font-size: 1rem;
+            }
+
+            .back-btn {
+                padding: 7px 11px;
+                font-size: 0.85rem;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .auth-container {
+                padding: 22px 18px;
+                max-width: 360px;
+                margin: 10px;
+            }
+
+            .title {
+                font-size: 1.5rem;
+            }
+
+            .subtitle {
+                font-size: 0.9rem;
+            }
+
+            .form-input {
+                padding: 12px;
+                font-size: 0.9rem;
+            }
+
+            .submit-btn {
+                padding: 12px;
+                font-size: 0.95rem;
+            }
+
+            .back-btn {
+                padding: 6px 10px;
+                font-size: 0.8rem;
+            }
+
+            .form-label {
+                font-size: 0.9rem;
+            }
+        }
+
+        @media (max-width: 400px) {
+            .auth-container {
+                padding: 20px 15px;
+                max-width: 320px;
+            }
+
+            .title {
+                font-size: 1.4rem;
+            }
+
+            .logo {
+                width: 65px;
+                height: 65px;
+            }
+
+            .form-input {
+                padding: 11px;
+                font-size: 0.85rem;
+            }
+
+            .submit-btn {
+                padding: 11px;
+                font-size: 0.9rem;
+            }
+
+            .back-btn {
+                padding: 5px 9px;
+                font-size: 0.75rem;
+            }
+        }
+
+        @media (max-width: 360px) {
+            .auth-container {
+                padding: 18px 12px;
+                max-width: 300px;
+            }
+
+            .title {
+                font-size: 1.3rem;
+            }
+
+            .subtitle {
+                font-size: 0.85rem;
+            }
+
+            .logo {
+                width: 60px;
+                height: 60px;
+            }
+
+            .form-input {
+                padding: 10px;
+                font-size: 0.8rem;
+            }
+
+            .submit-btn {
+                padding: 10px;
+                font-size: 0.85rem;
+            }
+
+            .back-btn {
+                padding: 4px 8px;
+                font-size: 0.7rem;
+            }
+
+            .form-label {
+                font-size: 0.85rem;
+            }
+
+            .loading-modal {
+                padding: 25px 20px;
+                max-width: 280px;
+            }
+
+            .loading-spinner {
+                width: 50px;
+                height: 50px;
+            }
+
+            .loading-title {
+                font-size: 1.1rem;
+            }
+
+            .loading-subtitle {
+                font-size: 0.9rem;
+            }
+        }
+
+        @media (max-width: 320px) {
+            .auth-container {
+                padding: 15px 10px;
+                max-width: 280px;
+            }
+
+            .title {
+                font-size: 1.2rem;
+            }
+
+            .logo {
+                width: 55px;
+                height: 55px;
+            }
+
+            .form-input {
+                padding: 9px;
+                font-size: 0.75rem;
+            }
+
+            .submit-btn {
+                padding: 9px;
+                font-size: 0.8rem;
+            }
+
+            .back-btn {
+                padding: 3px 7px;
+                font-size: 0.65rem;
+            }
+        }
+
+        /* تحسين التخطيط للشاشات الصغيرة جداً */
+        @media (max-height: 600px) {
+            body {
+                padding: 10px;
+            }
+
+            .auth-container {
+                padding: 20px 15px;
+                margin: 5px;
+            }
+
+            .logo-container {
+                margin-bottom: 20px;
+            }
+
+            .form-group {
+                margin-bottom: 15px;
+            }
+        }
+
+        /* تحسين للشاشات الطويلة */
+        @media (min-height: 800px) {
+            .auth-container {
+                padding: 45px 40px;
+            }
+
+            .logo-container {
+                margin-bottom: 35px;
+            }
+
+            .form-group {
+                margin-bottom: 25px;
+            }
+        }
+
+        /* تحسينات خاصة بالأجهزة اللوحية */
+        @media (min-width: 768px) and (max-width: 1024px) and (orientation: landscape) {
+            .logo-container {
+                flex-direction: row;
+                gap: 20px;
+                margin-bottom: 25px;
+            }
+
+            .title {
+                font-size: 2.2rem;
+                line-height: 1.2;
+                margin-bottom: 12px;
+            }
+
+            .subtitle {
+                font-size: 1.1rem;
+                line-height: 1.4;
+                max-width: 85%;
+            }
+
+            .logo {
+                width: 85px;
+                height: 85px;
+                margin-bottom: 0;
+            }
+        }
+
+        @media (min-width: 768px) and (max-width: 1024px) and (orientation: portrait) {
+            .logo-container {
+                flex-direction: column;
+                gap: 18px;
+                margin-bottom: 28px;
+            }
+
+            .title {
+                font-size: 2.1rem;
+                line-height: 1.3;
+                margin-bottom: 10px;
+            }
+
+            .subtitle {
+                font-size: 1.05rem;
+                line-height: 1.5;
+                max-width: 90%;
+            }
+
+            .logo {
+                width: 80px;
+                height: 80px;
+                margin-bottom: 0;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="auth-container">
+        <div class="logo-container">
+            <img src="anime4u.png" alt="شعار Anime4U" class="logo">
+            <button class="back-btn" onclick="window.location.href='index.html'">
+                <i class="fas fa-arrow-right"></i>
+                العودة للرئيسية
+            </button>
+            <h1 class="title">تسجيل الدخول</h1>
+            <p class="subtitle">أهلاً بك في عالم الأنميات</p>
+        </div>
+
+        <form id="loginForm">
+            <div class="form-group">
+                <label class="form-label">البريد الإلكتروني</label>
+                <input type="email" class="form-input" id="loginEmail" required>
+                <div class="error-message" id="loginEmailError"></div>
+            </div>
+            
+            <div class="form-group">
+                <label class="form-label">كلمة المرور</label>
+                <div class="password-toggle">
+                    <input type="password" class="form-input" id="loginPassword" required>
+                    <i class="fas fa-eye" onclick="togglePassword('loginPassword')"></i>
+                </div>
+                <div class="error-message" id="loginPasswordError"></div>
+            </div>
+
+            <div class="forgot-password">
+                <a href="#" onclick="forgotPassword()">نسيت كلمة المرور؟</a>
+            </div>
+
+            <button type="submit" class="submit-btn">
+                <i class="fas fa-sign-in-alt"></i>
+                تسجيل الدخول
+            </button>
+
+            <div class="success-message" id="loginSuccess"></div>
+        </form>
+
+        <div class="links">
+            <p>ليس لديك حساب؟ <a href="register.html">إنشاء حساب جديد</a></p>
+        </div>
+    </div>
+
+    <!-- واجهة جاري تسجيل الدخول -->
+    <div class="loading-overlay" id="loadingOverlay">
+        <div class="loading-modal">
+            <div class="loading-spinner"></div>
+            <div class="loading-title">جاري تسجيل الدخول...</div>
+            <div class="loading-subtitle">يرجى الانتظار قليلاً</div>
+        </div>
+    </div>
+
+    <script>
+        // دالة تبديل إظهار/إخفاء كلمة المرور
+        function togglePassword(inputId) {
+            const input = document.getElementById(inputId);
+            const icon = input.nextElementSibling;
+            
+            if (input.type === 'password') {
+                input.type = 'text';
+                icon.className = 'fas fa-eye-slash';
+            } else {
+                input.type = 'password';
+                icon.className = 'fas fa-eye';
+            }
+        }
+
+        // دالة إظهار رسالة خطأ
+        function showError(field, message) {
+            const errorElement = document.getElementById(field + 'Error');
+            if (errorElement) {
+                errorElement.textContent = message;
+                errorElement.style.display = 'block';
+                
+                // إضافة فئة الخطأ للحقل
+                const inputField = document.getElementById(field);
+                if (inputField) {
+                    inputField.classList.add('error');
+                }
+            }
+        }
+
+        // دالة إظهار رسالة نجاح
+        function showSuccess(message) {
+            const successElement = document.getElementById('loginSuccess');
+            if (successElement) {
+                successElement.textContent = message;
+                successElement.style.display = 'block';
+            }
+        }
+
+        // دالة إظهار واجهة جاري تسجيل الدخول
+        function showLoading() {
+            const loadingOverlay = document.getElementById('loadingOverlay');
+            if (loadingOverlay) {
+                loadingOverlay.style.display = 'flex';
+            }
+        }
+
+        // دالة إخفاء واجهة جاري تسجيل الدخول
+        function hideLoading() {
+            const loadingOverlay = document.getElementById('loadingOverlay');
+            if (loadingOverlay) {
+                loadingOverlay.style.display = 'none';
+            }
+        }
+
+        // دالة مسح رسائل الخطأ
+        function clearErrors() {
+            const errorElements = document.querySelectorAll('.error-message');
+            errorElements.forEach(element => {
+                element.style.display = 'none';
+            });
+            
+            // إزالة فئة الخطأ من الحقول
+            const inputFields = document.querySelectorAll('.form-input');
+            inputFields.forEach(field => {
+                field.classList.remove('error');
+            });
+        }
+
+        // دالة التحقق من صحة البريد الإلكتروني
+        function isValidEmail(email) {
+            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            return emailRegex.test(email);
+        }
+
+        // دالة معالجة تسجيل الدخول
+        function handleLogin(e) {
+            e.preventDefault();
+            
+            const email = document.getElementById('loginEmail').value.trim();
+            const password = document.getElementById('loginPassword').value.trim();
+            
+            // إعادة تعيين رسائل الخطأ
+            clearErrors();
+            
+            // التحقق من صحة البيانات
+            if (!email || !password) {
+                showError('loginEmail', 'يرجى ملء جميع الحقول');
+                return;
+            }
+            
+            if (!isValidEmail(email)) {
+                showError('loginEmail', 'يرجى إدخال بريد إلكتروني صحيح');
+                return;
+            }
+            
+            // إظهار واجهة جاري تسجيل الدخول
+            showLoading();
+            
+            // محاولة تسجيل الدخول مع تأخير لمحاكاة العملية
+            setTimeout(() => {
+                console.log('محاولة تسجيل الدخول:', { email, password: '***' });
+                const loginResult = attemptLogin(email, password);
+                console.log('نتيجة تسجيل الدخول:', loginResult);
+                
+                if (loginResult.success) {
+                    // تسجيل الدخول ناجح
+                    const userData = {
+                        ...loginResult.user,
+                        isLoggedIn: true,
+                        loginTime: new Date().toISOString()
+                    };
+                    localStorage.setItem('anime4u_user', JSON.stringify(userData));
+                    
+                    // إخفاء واجهة جاري تسجيل الدخول
+                    hideLoading();
+                    
+                    if (loginResult.user.isAdmin) {
+                        // الأدمن يتم توجيهه للوحة التحكم
+                        console.log('تم تسجيل الدخول كأدمن:', loginResult.user);
+                        showSuccess('مرحباً NARUTO! تم تسجيل الدخول بنجاح كأدمن. جاري التوجيه للوحة التحكم...');
+                        setTimeout(() => {
+                            window.location.href = 'admin.html';
+                        }, 2000);
+                    } else {
+                        // المستخدم العادي يتم توجيهه للصفحة الرئيسية
+                        showSuccess('تم تسجيل الدخول بنجاح! جاري التوجيه للصفحة الرئيسية...');
+                        setTimeout(() => {
+                            window.location.href = 'index.html';
+                        }, 2000);
+                    }
+                } else {
+                    // فشل تسجيل الدخول
+                    console.log('فشل تسجيل الدخول:', loginResult.message);
+                    
+                    // إخفاء واجهة جاري تسجيل الدخول
+                    hideLoading();
+                    
+                    showError('loginEmail', loginResult.message);
+                }
+            }, 1500); // تأخير 1.5 ثانية لمحاكاة عملية تسجيل الدخول
+        }
+
+        // دالة محاولة تسجيل الدخول
+        function attemptLogin(email, password) {
+            // التحقق من بيانات الأدمن أولاً - يجب أن يكون هذا أول شيء
+            if (email.toLowerCase() === 'khaledxd000@gmail.com' && password === 'khaled123@#$') {
+                console.log('تم العثور على بيانات الأدمن - تسجيل الدخول ناجح');
+                return {
+                    success: true,
+                    user: {
+                        id: 'admin_001',
+                        username: 'NARUTO',
+                        email: 'khaledxd000@gmail.com',
+                        profileImage: 'anime4u.png',
+                        registerTime: new Date().toISOString(),
+                        isAdmin: true,
+                        role: 'admin'
+                    }
+                };
+            }
+            
+            // إذا لم تكن بيانات الأدمن، نبحث في المستخدمين العاديين
+            const users = JSON.parse(localStorage.getItem('anime4u_users') || '[]');
+            
+            // البحث عن المستخدم بالبريد الإلكتروني
+            const user = users.find(u => u.email.toLowerCase() === email.toLowerCase());
+            
+            if (!user) {
+                return {
+                    success: false,
+                    message: 'البريد الإلكتروني غير مسجل'
+                };
+            }
+            
+            if (!user.isActive) {
+                return {
+                    success: false,
+                    message: 'الحساب معطل'
+                };
+            }
+            
+            // التحقق من كلمة المرور
+            if (user.password !== password) {
+                return {
+                    success: false,
+                    message: 'كلمة المرور غير صحيحة'
+                };
+            }
+            
+            // تسجيل الدخول ناجح
+            return {
+                success: true,
+                user: {
+                    id: user.id,
+                    username: user.username,
+                    email: user.email,
+                    profileImage: user.profileImage,
+                    registerTime: user.registerTime,
+                    isAdmin: false,
+                    role: 'user'
+                }
+            };
+        }
+
+
+
+        // دالة نسيت كلمة المرور
+        function forgotPassword() {
+            alert('سيتم إرسال رابط إعادة تعيين كلمة المرور إلى بريدك الإلكتروني');
+        }
+
+        // إعداد النموذج
+        document.addEventListener('DOMContentLoaded', function() {
+            const loginForm = document.getElementById('loginForm');
+            if (loginForm) {
+                loginForm.addEventListener('submit', handleLogin);
+            }
+        });
+    </script>
+</body>
+</html>
